@@ -5,6 +5,9 @@ Tested with Python 3.10.13
 ![emotion_detection](https://github.com/datamagic2020/Emotion_detection_with_CNN/blob/main/emoition_detection.png)
 
 ### Packages need to be installed
+
+Make sure you are running `python 3.10.13`
+
 - python3 -m venv .venv
 - pip install -r requirement.txt
 
@@ -26,4 +29,4 @@ copy these two files create model folder in your project directory and paste it.
 ### run your emotion detection test file
 `python TestEmotionDetector.py`
 
-Sample video can be downloaded from https://www.pexels.com/video/three-girls-laughing-5273028/. One downloaded rename it to emotion_sample.mp4 and move it to sample folder
+Sample video can be downloaded from https://www.pexels.com/video/three-girls-laughing-5273028/. Once downloaded rename it to emotion_sample.mp4 and move it to sample folder.
