@@ -4,6 +4,10 @@ import os
 import matplotlib.pyplot as plt
 from keras.models import Model, model_from_json
 
+
+
+
+
 # Assume 'model' is your pre-trained CNN model
 # and 'video_stream' is your video stream capture object
 # Select the layers from which you want to visualize the activations
