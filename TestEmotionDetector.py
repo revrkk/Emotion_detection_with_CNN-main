@@ -1,9 +1,42 @@
 import cv2
 import numpy as np
 from keras.models import model_from_json
-
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
 emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
+
+
+def display_layer_activations(model, input_image, layerName):
+    # Assume 'model' is your pre-trained CNN model
+    # and 'input_image' is the input image you want to use
+    # Select the layer from which you want to visualize the activations
+    layer_name = layerName  # Example layer name
+
+    # Create a model that outputs the activations of the selected layer
+    activation_model = tf.keras.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
+
+    # Preprocess the input image (assuming it's in BGR format)
+    input_image = cv2.resize(input_image, (model.input_shape[1], model.input_shape[2]))
+    input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)  # Convert to RGB
+    input_image = np.expand_dims(input_image, axis=0)  # Add batch dimension
+
+    # Get the activations for the input image
+    activations = activation_model.predict(input_image)
+
+    # Display each filter output as an image
+    num_filters = activations.shape[-1]
+    rows = int(np.ceil(num_filters / 8))  # Assuming 8 columns for display
+    fig, axarr = plt.subplots(rows, 8, figsize=(20, 10))
+
+    for i in range(num_filters):
+        ax = axarr[i // 8, i % 8] if num_filters > 8 else axarr[i]
+        ax.imshow(activations[0, :, :, i], cmap='viridis')  # Display the activation
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
 
 # load json and create model
 json_file = open('model/emotion_model.json', 'r')
@@ -42,6 +75,16 @@ while True:
 
         # predict the emotions
         emotion_prediction = emotion_model.predict(cropped_img)
+
+        for layer in emotion_model.layers:
+            # Create a new model that outputs the layer's output
+            intermediate_layer_model = tf.keras.Model(inputs=emotion_model.input, outputs=layer.output)
+            # Get the output of the current layer for the input image
+            #intermediate_output = intermediate_layer_model.predict(cropped_img)
+            display_layer_activations(intermediate_layer_model, cropped_img, layer.name)
+            # Print the output shape
+            #print(f"Output shape of {layer.name}: {intermediate_output.shape}")
+        
         maxindex = int(np.argmax(emotion_prediction))
         cv2.putText(frame, emotion_dict[maxindex], (x+5, y-20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
